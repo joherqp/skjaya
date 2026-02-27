@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Pure White Base */
+    --background: 0 0% 100%;
+    /* #FFFFFF */
+    --foreground: 240 10% 3.9%;
+    /* Nearly black */
+
+    /* Surface variant (Android lists/cards) */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    /* Primary needs to be a solid brand color (Teal to match design) */
+    --primary: 173 80% 40%;
+    /* Teal CVSKJ */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 173 30% 96%;
+    --accent-foreground: 173 80% 30%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Android Status Colors */
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 40 100% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --info: 190 90% 50%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 173 80% 40%;
+
+    /* Material You uses larger radius */
+    --radius: 1rem;
+    /* 16px to 24px is common in Android */
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    /* Slightly lighter than bg */
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 173 80% 45%;
+    /* Lighter teal for dark mode */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 40 100% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --info: 190 90% 50%;
+    --info-foreground: 222.2 47.4% 11.2%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    /* Eliminate scrollbar for app-like feel on desktop webkit */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Make headings feel like Android titles */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-medium tracking-tight;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    /* Material You style headers usually solid or subtle, but user asked to keep style previously. 
+       Let's adapt it to be Material-like: Solid primary with subtle gradient */
+    @apply bg-gradient-to-r from-primary to-teal-700 text-primary-foreground shadow-sm;
+  }
+
+  .glass {
+    @apply bg-white/90 backdrop-blur-sm border-none shadow-sm dark:bg-black/80;
+  }
+
+  /* Android-like elevation shadows */
+  .shadow-android {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .shadow-android-lg {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  .logo-round {
+    @apply relative flex items-center justify-center rounded-full shadow-lg transition-all duration-300 active:scale-95 cursor-pointer;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, #0d9488 100%);
+    box-shadow: 0 4px 12px -2px rgba(20, 184, 166, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .logo-round:hover {
+    @apply shadow-xl brightness-110 -translate-y-0.5;
+    box-shadow: 0 6px 16px -2px rgba(20, 184, 166, 0.4), inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .logo-text {
+    @apply font-black tracking-tighter text-white select-none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IndexedDB Test - CVSKJ</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .test-card {
+        background: white;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      button {
+        background: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      .error {
+        color: red;
+      }
+      .success {
+        color: green;
+      }
+      .info {
+        color: blue;
+      }
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧪 IndexedDB Test - CVSKJ</h1>
+
+    <div class="test-card">
+      <h2>Database Status</h2>
+      <div id="status">Checking...</div>
+      <button onclick="checkDB()">Check Database</button>
+      <button onclick="listStores()">List Stores</button>
+      <button onclick="clearDB()">Clear All Data</button>
+    </div>
+
+    <div class="test-card">
+      <h2>Test Operations</h2>
+      <button onclick="testWrite()">Test Write</button>
+      <button onclick="testRead()">Test Read</button>
+      <button onclick="viewAllData()">View All Data</button>
+    </div>
+
+    <div class="test-card">
+      <h2>Output</h2>
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      const DB_NAME = "JBROCK_DB";
+      const DB_VERSION = 2;
+
+      const STORES = {
+        BARANG: "barang",
+        PELANGGAN: "pelanggan",
+        PENJUALAN: "penjualan",
+        SETORAN: "setoran",
+        ABSENSI: "absensi",
+        NOTIFIKASI: "notifikasi",
+        PERSETUJUAN: "persetujuan",
+        PERMINTAAN_BARANG: "permintaan_barang",
+        MUTASI_BARANG: "mutasi_barang",
+        PENYESUAIAN_STOK: "penyesuaian_stok",
+        PROFIL_PERUSAHAAN: "profil_perusahaan",
+        CABANG: "cabang",
+        KATEGORI: "kategori",
+        SATUAN: "satuan",
+        KATEGORI_PELANGGAN: "kategori_pelanggan",
+        REKENING_BANK: "rekening_bank",
+      };
+
+      function log(message, type = "info") {
+        const output = document.getElementById("output");
+        const className =
+          type === "error" ? "error" : type === "success" ? "success" : "info";
+        output.innerHTML += `<div class="${className}">${message}</div>\n`;
+        console.log(message);
+      }
+
+      function openDB() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => resolve(request.result);
+
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            log(
+              `🔨 Upgrading DB from v${event.oldVersion} to v${event.newVersion}`,
+              "info"
+            );
+
+            Object.values(STORES).forEach((storeName) => {
+              if (!db.objectStoreNames.contains(storeName)) {
+                db.createObjectStore(storeName, { keyPath: "id" });
+                log(`  ➕ Created store: ${storeName}`, "success");
+              }
+            });
+          };
+        });
+      }
+
+      async function checkDB() {
+        const status = document.getElementById("status");
+        try {
+          const db = await openDB();
+          const storeCount = db.objectStoreNames.length;
+          status.innerHTML = `<span class="success">✅ Database OK - ${storeCount} stores</span>`;
+          log("✅ Database connection successful");
+          db.close();
+        } catch (error) {
+          status.innerHTML = `<span class="error">❌ Database Error</span>`;
+          log(`❌ Error: ${error}`, "error");
+        }
+      }
+
+      async function listStores() {
+        try {
+          const db = await openDB();
+          log("\n📦 Available Stores:", "info");
+          for (let i = 0; i < db.objectStoreNames.length; i++) {
+            log(`  ${i + 1}. ${db.objectStoreNames[i]}`, "info");
+          }
+          db.close();
+        } catch (error) {
+          log(`❌ Error: ${error}`, "error");
+        }
+      }
+
+      async function testWrite() {
+        try {
+          const db = await openDB();
+          const transaction = db.transaction(STORES.BARANG, "readwrite");
+          const store = transaction.objectStore(STORES.BARANG);
+
+          const testData = {
+            id: "test-1",
+            nama: "Test Product",
+            kode: "TEST001",
+            stok: 100,
+          };
+
+          store.put(testData);
+          await new Promise((resolve, reject) => {
+            transaction.oncomplete = resolve;
+            transaction.onerror = reject;
+          });
+
+          log("✅ Test write successful", "success");
+          db.close();
+        } catch (error) {
+          log(`❌ Write error: ${error}`, "error");
+        }
+      }
+
+      async function testRead() {
+        try {
+          const db = await openDB();
+          const transaction = db.transaction(STORES.BARANG, "readonly");
+          const store = transaction.objectStore(STORES.BARANG);
+          const request = store.getAll();
+
+          const data = await new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = reject;
+          });
+
+          log(`\n📖 Read ${data.length} items from barang store:`, "success");
+          log(JSON.stringify(data, null, 2));
+          db.close();
+        } catch (error) {
+          log(`❌ Read error: ${error}`, "error");
+        }
+      }
+
+      async function viewAllData() {
+        try {
+          const db = await openDB();
+          log("\n📊 All Data:", "info");
+
+          for (const storeName of Object.values(STORES)) {
+            const transaction = db.transaction(storeName, "readonly");
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+
+            const data = await new Promise((resolve, reject) => {
+              request.onsuccess = () => resolve(request.result);
+              request.onerror = reject;
+            });
+
+            log(`\n${storeName}: ${data.length} items`, "info");
+          }
+
+          db.close();
+        } catch (error) {
+          log(`❌ Error: ${error}`, "error");
+        }
+      }
+
+      async function clearDB() {
+        if (!confirm("Are you sure you want to clear all data?")) return;
+
+        try {
+          const db = await openDB();
+
+          for (const storeName of Object.values(STORES)) {
+            const transaction = db.transaction(storeName, "readwrite");
+            await transaction.objectStore(storeName).clear();
+          }
+
+          log("🗑️ All data cleared", "success");
+          db.close();
+        } catch (error) {
+          log(`❌ Clear error: ${error}`, "error");
+        }
+      }
+
+      // Auto-check on load
+      window.onload = () => {
+        checkDB();
+      };
+    </script>
+  </body>
+</html>

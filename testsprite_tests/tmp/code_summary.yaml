@@ -1,0 +1,66 @@
+version: "2"
+type: frontend
+tech_stack:
+  - Language: TypeScript
+  - Framework: React (Vite)
+  - UI Library: Tailwind CSS, Radix UI (shadcn/ui), Lucide icons
+  - State Management: React Query
+  - Auth/Database: Supabase
+routes:
+  - path: /login
+    file: src/pages/login/index.tsx
+    auth_required: false
+    description: User login page
+  - path: /beranda
+    file: src/pages/beranda/index.tsx
+    auth_required: true
+    description: Dashboard/Home page
+  - path: /barang
+    file: src/pages/barang/index.tsx
+    auth_required: true
+    description: Product list and management
+  - path: /pelanggan
+    file: src/pages/pelanggan/index.tsx
+    auth_required: true
+    description: Customer management
+  - path: /penjualan/buat
+    file: src/pages/penjualan/TambahPenjualan.tsx
+    auth_required: true
+    description: Create new sales transaction
+  - path: /laporan
+    file: src/pages/laporan/index.tsx
+    auth_required: true
+    description: Reports overview
+features:
+  - name: User Authentication
+    description: Login with email and password via Supabase
+    files:
+      - src/pages/login/index.tsx
+      - src/contexts/AuthContext.tsx
+    entry_route: /login
+    user_interactions:
+      - Enter email and password
+      - Click Login button
+    auth_required: false
+  - name: Sales Transaction
+    description: Create and manage sales transactions
+    files:
+      - src/pages/penjualan/TambahPenjualan.tsx
+      - src/contexts/DatabaseContext.tsx
+    entry_route: /penjualan/buat
+    user_interactions:
+      - Select customer
+      - Add products to cart
+      - Process payment
+    auth_required: true
+  - name: Inventory Management
+    description: Manage products, stock updates, and restock
+    files:
+      - src/pages/barang/index.tsx
+      - src/pages/barang/UpdateStok.tsx
+    entry_route: /barang
+    user_interactions:
+      - View product list
+      - Update stock levels
+    auth_required: true
+known_limitations: []
