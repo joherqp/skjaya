@@ -147,7 +147,7 @@ export function PelangganForm({ onSuccess, onCancel, className, isDialog = false
         sisaKredit: 0,
         salesId: user.id,
         cabangId: user.cabangId,
-        isActive: isAdminOrOwner ? true : false,
+        isActive: true,
         lokasi: {
           latitude,
           longitude,
